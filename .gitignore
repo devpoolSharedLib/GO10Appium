@@ -1,0 +1,7 @@
+.settings/
+.classpath
+target/
+.project
+LICENSE
+.factorypath
+src/test/resources/config.properties
