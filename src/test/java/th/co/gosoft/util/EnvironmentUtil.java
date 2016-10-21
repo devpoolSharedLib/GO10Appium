@@ -18,7 +18,8 @@ import th.co.gosoft.model.NewLikeModel;
 public class EnvironmentUtil {
 	private static Database db = CloudantClientUtils.getDBNewInstance();
 	private static DateFormat postFormat = createSimpleDateFormat("yyyy/MM/dd HH:mm:ss", "GMT+7");
-	 private static String stampDate;
+	private static String ROOM_ID = "rm01";
+	private static String stampDate;
 	 
 	public static void deleteTopic(){
 		System.out.println(">>>>>>>>>>>>>>>>>>> deleteTopic()");
@@ -26,7 +27,6 @@ public class EnvironmentUtil {
              .fields("_id").fields("_rev").fields("avatarName").fields("avatarPic").fields("subject").fields("empEmail")
              .fields("content").fields("date").fields("type").fields("roomId").fields("countLike").fields("updateDate").sort(new IndexField("date", SortOrder.asc)));
         
-        System.out.println("size : "+topicModelList.size());
         for(int i=0;i<topicModelList.size();i++){
         	 db.remove(topicModelList.get(i));
         }
@@ -44,7 +44,7 @@ public class EnvironmentUtil {
         topicmodel.setCountLike(0);
         topicmodel.setDate(stampDate);
         topicmodel.setEmpEmail("appium@gosoft.co.th");
-        topicmodel.setRoomId("rm01");
+        topicmodel.setRoomId(ROOM_ID);
         topicmodel.setType("host");
         topicmodel.setUpdateDate(stampDate);
         db.save(topicmodel);
@@ -52,12 +52,11 @@ public class EnvironmentUtil {
 	}
 	
 	public static void deleteLike(){
-		System.out.println(">>>>>>>>>>>>>>>>>>> deleteTopic()");
+		System.out.println(">>>>>>>>>>>>>>>>>>> deleteLike()");
         List<NewLikeModel> likeModelList = db.findByIndex(getLikeModelByEmpEmailJsonString("appium@gosoft.co.th"), NewLikeModel.class, new FindByIndexOptions()
              .fields("_id").fields("_rev").fields("topicId").fields("empEmail")
              .fields("statusLike").fields("date").fields("type"));
         
-        System.out.println("size : "+likeModelList.size());
         for(int i=0;i<likeModelList.size();i++){
         	 db.remove(likeModelList.get(i));
         }
@@ -70,7 +69,7 @@ public class EnvironmentUtil {
         sb.append("\"_id\": {\"$gt\": 0},");
         sb.append("\"date\": {\"$gt\": 0},");
         sb.append("\"pin\": { \"$exists\": false },");
-        sb.append("\"roomId\": \"rm01\"");
+        sb.append("\"roomId\": \""+ROOM_ID+"\"");
         sb.append("}}");
         return sb.toString();
     }

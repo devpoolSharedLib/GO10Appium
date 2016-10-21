@@ -53,10 +53,11 @@ public class AppiumIOSTest {
 	
 	@BeforeClass
 	public static void setupAppium() throws MalformedURLException{
-//		File appDir = new File("src");	
-		File appDir = new File("/Users/Plooer/Library/Developer/Xcode/DerivedData/GO10-fguwrzphkqtrmfescdvxhwnxgxtr/Build/Products/Debug-iphonesimulator");
-		File app = new File(appDir,"GO10.app");
+//		File appDir = new File("src/test/resources");	
+//		File appDir = new File("/Users/Plooer/Library/Developer/Xcode/DerivedData/GO10-fguwrzphkqtrmfescdvxhwnxgxtr/Build/Products/Debug-iphonesimulator");
+//		File app = new File(appDir,"GO10.app");
 		
+		File app = new File("src/test/resources/GO10.app");
 		cap = new DesiredCapabilities();
 		cap.setCapability(MobileCapabilityType.PLATFORM_VERSION, "9.3");
 		cap.setCapability(MobileCapabilityType.DEVICE_NAME, "iPhone 6");
@@ -75,7 +76,7 @@ public class AppiumIOSTest {
 		driver.findElement(By.id("Login")).click();
 	}
 	
-//	@AfterClass
+	@AfterClass
 	public static void quit(){
 		driver.quit();
 	}
