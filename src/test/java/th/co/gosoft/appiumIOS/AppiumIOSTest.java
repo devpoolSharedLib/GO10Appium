@@ -41,7 +41,7 @@ public class AppiumIOSTest {
 	private String strContent = "Appium IOS New Content";
 	private String strComment = "Appium IOS New Comment";
 	private String strPostFotComment = "Post for Test Comment and Like Automate";
-	private String defaultNameAvatar = "DefaultAppuim";
+	private String defaultNameAvatar = "DefaultAppium";
 	private String nameAvatar = "NameAppium";
 	
 	@BeforeClass
@@ -53,11 +53,7 @@ public class AppiumIOSTest {
 	
 	@BeforeClass
 	public static void setupAppium() throws MalformedURLException{
-//		File appDir = new File("src/test/resources");	
-//		File appDir = new File("/Users/Plooer/Library/Developer/Xcode/DerivedData/GO10-fguwrzphkqtrmfescdvxhwnxgxtr/Build/Products/Debug-iphonesimulator");
-//		File app = new File(appDir,"GO10.app");
-		
-		File app = new File("src/test/resources/GO10.app");
+		File app = new File("src/test/resources/GO10-1.0.1.app");
 		cap = new DesiredCapabilities();
 		cap.setCapability(MobileCapabilityType.PLATFORM_VERSION, "9.3");
 		cap.setCapability(MobileCapabilityType.DEVICE_NAME, "iPhone 6");
