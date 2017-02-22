@@ -17,7 +17,7 @@ public class AndroidSetup {
 	
 	protected static void prepareAndroidForAppium() throws MalformedURLException{
 //		File app  = new File(AndroidSetup.class.getClassLoader().getResource("app-debug.apk").getFile());
-		File app  = new File(AndroidSetup.class.getClassLoader().getResource("app-debug-16.apk").getFile());
+		File app  = new File(AndroidSetup.class.getClassLoader().getResource("app-debug-17.apk").getFile());
 		DesiredCapabilities capabilities = new DesiredCapabilities();
 		capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, "Appium-01");
 		capabilities.setCapability(MobileCapabilityType.PLATFORM_NAME, MobilePlatform.ANDROID);

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import th.co.gosoft.appiumAndroid.pages.BasePage;
@@ -41,8 +42,8 @@ public class AppiumTest extends AndroidSetup {
 		assertEquals(BoardContentPage.HOST_SUBJECT, new BoardContentPage(driver).pressHomeBtn().getSubjectFromTopicList(0));
 	}
 	
-	@Test
-//	@Ignore
+//	@Test
+	@Ignore
 	public void commentTopicTest() {
 		String toppicSubject = "Post for Test Comment and Like Automate";
 		new LoginPage(driver)
@@ -56,8 +57,8 @@ public class AppiumTest extends AndroidSetup {
 		assertEquals(toppicSubject, new BoardContentPage(driver).pressHomeBtn().getSubjectFromTopicList(0));
 	}
 	
-	@Test
-//	@Ignore
+//	@Test
+	@Ignore
 	public void likeTopicTest() throws InterruptedException {
 		String toppicSubject = "Post for Test Comment and Like Automate";
 		new LoginPage(driver)
@@ -80,8 +81,8 @@ public class AppiumTest extends AndroidSetup {
 		assertEquals("1", new RoomPage(driver).getLikeCount(toppicSubject));
 	}
 	
-	@Test
-//	@Ignore
+//	@Test
+	@Ignore
 	public void changeAvatarPicTest() {
 		new LoginPage(driver)
 			.userLogin()
@@ -94,8 +95,8 @@ public class AppiumTest extends AndroidSetup {
 		new SettingAvatarPage(driver).pressBack();
 	}
 	
-	@Test
-//	@Ignore
+//	@Test
+	@Ignore
 	public void changeAvatarNameTest() {
 		new LoginPage(driver)
 			.userLogin()

@@ -12,13 +12,15 @@ import com.cloudant.client.api.model.FindByIndexOptions;
 import com.cloudant.client.api.model.IndexField;
 import com.cloudant.client.api.model.IndexField.SortOrder;
 
-import th.co.gosoft.model.NewTopicModel;
 import th.co.gosoft.model.NewLikeModel;
+import th.co.gosoft.model.NewTopicModel;
+import th.co.gosoft.model.ReadModel;
+import th.co.gosoft.model.RoomModel;
 
 public class EnvironmentUtil {
+	private static final String ROOM_ID = "rm01";
 	private static Database db = CloudantClientUtils.getDBNewInstance();
 	private static DateFormat postFormat = createSimpleDateFormat("yyyy/MM/dd HH:mm:ss", "GMT+7");
-	private static String ROOM_ID = "rm01";
 	private static String stampDate;
 	 
 	public static void deleteTopic(){
@@ -27,10 +29,20 @@ public class EnvironmentUtil {
              .fields("_id").fields("_rev").fields("avatarName").fields("avatarPic").fields("subject").fields("empEmail")
              .fields("content").fields("date").fields("type").fields("roomId").fields("countLike").fields("updateDate").sort(new IndexField("date", SortOrder.asc)));
         
+        System.out.println("size : "+topicModelList.size());
         for(int i=0;i<topicModelList.size();i++){
         	 db.remove(topicModelList.get(i));
         }
         System.out.println(">>>>>>>>>>>>>>>>>>> deleteTopic Complete");
+	}
+	
+	public static void resetTotalTopic() {
+		System.out.println(">>>>>>>>>>>>>>>>>>> resetTotalTopic()");
+		List<RoomModel> roomModelList = db.findByIndex(getRoomModelByRoomId(), RoomModel.class);
+		RoomModel roomModel = roomModelList.get(0);
+		roomModel.setTotalTopic(1);
+		db.update(roomModel);
+		System.out.println(">>>>>>>>>>>>>>>>>>> resetTotalTopic Complete");
 	}
 
 	public static void createTopic(){
@@ -57,10 +69,22 @@ public class EnvironmentUtil {
              .fields("_id").fields("_rev").fields("topicId").fields("empEmail")
              .fields("statusLike").fields("date").fields("type"));
         
+        System.out.println("Like list size : "+likeModelList.size());
         for(int i=0;i<likeModelList.size();i++){
         	 db.remove(likeModelList.get(i));
         }
         System.out.println(">>>>>>>>>>>>>>>>>>> deleteLike Complete");
+	}
+	
+	public static void deleteRead(){
+		System.out.println(">>>>>>>>>>>>>>>>>>> deleteRead()");
+        List<ReadModel> readModelList = db.findByIndex(getReadModelByEmpEmailJsonString("appium@gosoft.co.th"), ReadModel.class);
+        
+        System.out.println("Read list size : "+readModelList.size());
+        for(int i=0;i<readModelList.size();i++){
+        	 db.remove(readModelList.get(i));
+        }
+        System.out.println(">>>>>>>>>>>>>>>>>>> deleteRead Complete");
 	}
 	
 	private static String getTopicByRoomIdJsonString( ){
@@ -74,7 +98,17 @@ public class EnvironmentUtil {
         return sb.toString();
     }
 	
-	 private static String getLikeModelByEmpEmailJsonString(String empEmail){
+	private static String getRoomModelByRoomId() {
+		StringBuilder sb = new StringBuilder();
+        sb.append("{\"selector\": {");
+        sb.append("\"_id\": \""+ROOM_ID+"\",");
+        sb.append("\"$and\": [{\"type\": \"room\"}]");
+        sb.append("}}");
+        System.out.println("query : "+sb.toString());
+        return sb.toString();	
+    }
+	
+	private static String getLikeModelByEmpEmailJsonString(String empEmail){
 	        StringBuilder sb = new StringBuilder();
 	        sb.append("{\"selector\": {");
 	        sb.append("\"_id\": {\"$gt\": 0},");
@@ -82,16 +116,22 @@ public class EnvironmentUtil {
 	        sb.append("},");
 	        sb.append("\"fields\": [\"_id\",\"_rev\",\"topicId\",\"empEmail\",\"statusLike\",\"type\"]}");
 	        return sb.toString();
-	    }
+    }
+	
+	private static String getReadModelByEmpEmailJsonString(String empEmail){
+        StringBuilder sb = new StringBuilder();
+        sb.append("{\"selector\": {");
+        sb.append("\"_id\": {\"$gt\": 0},");
+        sb.append("\"$and\": [{\"type\":\"read\"}, {\"empEmail\":\""+empEmail+"\"}]");
+        sb.append("},");
+        sb.append("\"fields\": [\"_id\",\"_rev\",\"topicId\",\"empEmail\",\"type\"]}");
+        return sb.toString();
+	}	
+	 
 	private static DateFormat createSimpleDateFormat(String formatString, String timeZone) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US);
         dateFormat.setTimeZone(TimeZone.getTimeZone(timeZone));
         return dateFormat;
     }
 	
-	public static void main(String [] args){
-//		deleteTopic();
-//		createTopic();
-		deleteLike();
-	}
 }

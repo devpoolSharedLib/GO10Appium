@@ -32,221 +32,128 @@ import io.appium.java_client.ios.IOSElement;
 import io.appium.java_client.remote.MobileCapabilityType;
 import io.appium.java_client.remote.MobilePlatform;
 import th.co.gosoft.util.EnvironmentUtil;
+import th.co.gosoft.appiumIOS.AppiumIOSAction;
 
 public class AppiumIOSTest {
 	private static  WebDriver driver;
+	static AppiumIOSAction appiumIosAction;
 	
 	private static DesiredCapabilities cap;
-	private String strPost = "IOS New Topic";
-	private String strContent = "Appium IOS New Content";
-	private String strComment = "Appium IOS New Comment";
-	private String strPostFotComment = "Post for Test Comment and Like Automate";
-	private String defaultNameAvatar = "DefaultAppium";
-	private String nameAvatar = "NameAppium";
+	private String STR_POST = "IOS New Topic";
+	private String STR_CONTENT = "Appium IOS New Content";
+	private String STR_COMMENT = "Appium IOS New Comment";
+	private String STR_POST_FOR_COMMENT = "Post for Test Comment and Like Automate";
+	private String DEFAULT_NAME_AVATAR = "DefaultAppium";
+	private String NAME_AVATAR = "NameAppium";
+	private String AVATAR_TYPE_WOMAN = "woman";
+	private String AVATAR_TYPE_MAN = "man";
 	
 	@BeforeClass
 	public static void setEnvironment(){
 		EnvironmentUtil.deleteTopic();
+		EnvironmentUtil.resetTotalTopic();
 		EnvironmentUtil.createTopic();
 		EnvironmentUtil.deleteLike();
+		EnvironmentUtil.deleteRead();
 	}
 	
 	@BeforeClass
 	public static void setupAppium() throws MalformedURLException{
-		File app = new File("src/test/resources/GO10-1.0.1.app");
+		File app = new File("src/test/resources/GO10-1.0.4.app");
 		cap = new DesiredCapabilities();
 		cap.setCapability(MobileCapabilityType.PLATFORM_VERSION, "9.3");
 		cap.setCapability(MobileCapabilityType.DEVICE_NAME, "iPhone 6");
-//		cap.setCapability(MobileCapabilityType.BROWSER_NAME, "safari");
 		cap.setCapability(MobileCapabilityType.APP,app.getAbsolutePath());
 		driver = new IOSDriver(new URL("http://127.0.0.1:4723/wd/hub"), cap);
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		appiumIosAction = new AppiumIOSAction(driver);
+		
+		appiumIosAction.loginAction();
+		appiumIosAction.pressAllowBtnAction();
+		appiumIosAction.logoutAction();
+		
 	}
 	
 	@Before
 	public void login() throws MalformedURLException {
-		driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIAScrollView[1]/UIATextField[1]")).clear();
-		driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIAScrollView[1]/UIATextField[1]")).sendKeys("appium@gosoft.co.th");
-		driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIAScrollView[1]/UIASecureTextField[1]")).clear();
-		driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIAScrollView[1]/UIASecureTextField[1]")).sendKeys("password");
-		driver.findElement(By.id("Login")).click();
+		appiumIosAction.loginAction();
 	}
 	
-	@AfterClass
-	public static void quit(){
-		driver.quit();
-	}
+////	@Test
+//	public void hotTopicList() throws MalformedURLException, InterruptedException{
+//		List<WebElement> hotTopicElements = driver.findElements(By.className("UIATableCell"));
+//		List<WebElement> roomElements = driver.findElements(By.className("UIACollectionCell"));
+//		assertEquals(12, hotTopicElements.size());
+//		assertEquals(10, roomElements.size());
+//	}
 	
-	@After
-	public void logout(){
-		driver.findElement(By.id("ic settings")).click();
-		driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[3]")).click();
-	}
-	
-//	@Test
-	public void hotTopicList() throws MalformedURLException, InterruptedException{
-		List<WebElement> hotTopicElements = driver.findElements(By.className("UIATableCell"));
-		List<WebElement> roomElements = driver.findElements(By.className("UIACollectionCell"));
-		assertEquals(12, hotTopicElements.size());
-		assertEquals(10, roomElements.size());
-	}
-	
-	@Test
+//	@Test 
 	public void newPost(){
-		gotoRoomPage();
-		driver.findElement(By.id("Compose")).click();
-		driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATextView[2]")).clear();
-		driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATextView[2]")).sendKeys(strPost);
-		driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIAScrollView[1]/UIAScrollView[1]/UIAWebView[1]")).clear();
-		driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIAScrollView[1]/UIAScrollView[1]/UIAWebView[1]")).sendKeys(strContent);
-		driver.findElement(By.id("ic send")).click();
-		assertEquals(strPost,driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[2]/UIAStaticText[1]")).getAttribute("name"));	
-		
-		//check news feed
-		pressBackBtn();
-		assertEquals(strPost,driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[1]/UIAStaticText[1]")).getAttribute("name"));
+		appiumIosAction.gotoRoomPage();
+		appiumIosAction.postTopic(STR_POST, STR_CONTENT);
+		assertEquals(STR_POST,driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[2]/UIAStaticText[1]")).getAttribute("name"));	
+		appiumIosAction.pressBackBtnActoin();
+		assertEquals(STR_POST,driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[1]/UIAStaticText[1]")).getAttribute("name"));
 	}	
 	
-	
-	@Test
+//	@Test
 	public void newComment(){
-		gotoRoomPage();
-		gotoTopic();
-		driver.findElement(By.id("COMMENT")).click();
-		driver.findElement(By.className("UIAWebView")).clear();
-		driver.findElement(By.className("UIAWebView")).sendKeys(strComment);
-		driver.findElement(By.id("ic send")).click();
-		assertEquals(strComment,driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[2]/UIAStaticText[3]")).getAttribute("name"));	
+		appiumIosAction.gotoRoomPage();
+		appiumIosAction.gotoTopic(STR_POST_FOR_COMMENT);
+		appiumIosAction.postComment(STR_COMMENT);
+		assertEquals(STR_COMMENT,driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[2]/UIAStaticText[3]")).getAttribute("name"));	
 		
 		//check news feed
-		pressHomeBtn();
-		assertEquals(strPostFotComment,driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[1]/UIAStaticText[1]")).getAttribute("name"));
+		appiumIosAction.pressHomeBtnAction();
+		assertEquals(STR_POST_FOR_COMMENT,driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[1]/UIAStaticText[1]")).getAttribute("name"));
 	}
 	
 	@Test
 	public void Like(){
-		gotoRoomPage();
-		//newLike
-		gotoLike();
-		assertEquals(1,Integer.parseInt(driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[@name = '" + strPostFotComment + "'][1]/UIAStaticText[2]")).getAttribute("value")));
-		//UpdateLike disLike
-		gotoLike();
-		assertEquals(0,Integer.parseInt(driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[@name = '" + strPostFotComment + "'][1]/UIAStaticText[2]")).getAttribute("value")));
-		//UpdateLike Like
-		gotoLike();
-		assertEquals(1,Integer.parseInt(driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[@name = '" + strPostFotComment + "'][1]/UIAStaticText[2]")).getAttribute("value")));
-	}
-	
+		appiumIosAction.gotoRoomPage();
+		appiumIosAction.gotoLikeTopic(STR_POST_FOR_COMMENT);
+		assertEquals(1,Integer.parseInt(driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[@name = '" + STR_POST_FOR_COMMENT + "'][1]/UIAStaticText[2]")).getAttribute("value")));
 
-	//	@Test
-	public void newLike(){
-		gotoRoomPage();
-		gotoTopic();
-		//Like
-		pressLikeBtn();
-		//Dislike
-		pressLikeBtn();
-		//Like
-		pressLikeBtn();
-		
-		pressBackBtn();
-		assertEquals(1,Integer.parseInt(driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[3]/UIAStaticText[2]")).getAttribute("value")));
-		
+		appiumIosAction.gotoLikeTopic(STR_POST_FOR_COMMENT);
+		assertEquals(0,Integer.parseInt(driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[@name = '" + STR_POST_FOR_COMMENT + "'][1]/UIAStaticText[2]")).getAttribute("value")));
+
+		appiumIosAction.gotoLikeTopic(STR_POST_FOR_COMMENT);
+		assertEquals(1,Integer.parseInt(driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[@name = '" + STR_POST_FOR_COMMENT + "'][1]/UIAStaticText[2]")).getAttribute("value")));
 	}
-	
+
 //	@Test
-	public void updatedisLike(){
-		gotoRoomPage();
-		gotoTopic();
-		//DisLike
-		pressLikeBtn();
-		
-		pressBackBtn();
-		assertEquals(0,Integer.parseInt(driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[3]/UIAStaticText[2]")).getAttribute("value")));
-		
-	}
-	
-//	@Test
-	public void updateLike(){
-//		gotoRoomPage();
-		gotoTopic();
-		//Like
-		pressLikeBtn();
-		
-		pressBackBtn();
-		assertEquals(1,Integer.parseInt(driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[3]/UIAStaticText[2]")).getAttribute("value")));
-		
-	}
-	
-	@Test
 	public void changeAvatarPic(){
-		
-		gotoSettingAvatar();
-		selectAvatar("Woman");
+		appiumIosAction.gotoSettingAvatar();
+		appiumIosAction.selectAvatar(AVATAR_TYPE_WOMAN);
 		assertEquals("girl07",driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIAButton[1]")).getAttribute("name"));
 		
-		selectAvatar("Man");
+		appiumIosAction.selectAvatar(AVATAR_TYPE_MAN);
 		assertEquals("man07",driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIAButton[1]")).getAttribute("name"));
 		
-		pressBackBtn();
-		pressBackBtn();
+		appiumIosAction.pressBackBtnActoin();
+		appiumIosAction.pressBackBtnActoin();
 	}
 	
-	@Test
+//	@Test
 	public void changeAvatarName(){
-		gotoSettingAvatar();
-		changeNameAvatar(nameAvatar);
-		assertEquals(nameAvatar,driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[1]/UIAStaticText[2]")).getAttribute("name"));
-		changeNameAvatar(defaultNameAvatar);
-		assertEquals(defaultNameAvatar,driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[1]/UIAStaticText[2]")).getAttribute("name"));
-		pressBackBtn();
-		pressBackBtn();
-	}
-	
-	public void pressHomeBtn(){
-		driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIANavigationBar[1]/UIAButton[3]")).click();
+		appiumIosAction.gotoSettingAvatar();
+		appiumIosAction.changeNameAvatar(NAME_AVATAR);
+		assertEquals(NAME_AVATAR,driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[1]/UIAStaticText[2]")).getAttribute("name"));
 		
+		appiumIosAction.changeNameAvatar(DEFAULT_NAME_AVATAR);
+		assertEquals(DEFAULT_NAME_AVATAR,driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[1]/UIAStaticText[2]")).getAttribute("name"));
+		
+		appiumIosAction.pressBackBtnActoin();
+		appiumIosAction.pressBackBtnActoin();
 	}
 	
-	public void pressBackBtn(){
-		driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIANavigationBar[1]/UIAButton[1]")).click();
+	@After
+	public void logout(){
+		appiumIosAction.logoutAction();
 	}
 	
-	public void gotoRoomPage(){
-		driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIACollectionView[1]/UIACollectionCell[1]")).click();
-	}
-	
-	public void gotoTopic(){
-		driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[@name = '" + strPostFotComment + "'][1]")).click();
-//		driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[3]")).click();
-	}
-	
-	public void gotoLike() {
-		gotoTopic();
-		pressLikeBtn();
-		pressBackBtn();
-	}
-	
-	public void pressLikeBtn(){
-		driver.findElement(By.id("LIKE")).click();
-	}
-	
-	public void gotoSettingAvatar(){
-		driver.findElement(By.id("ic settings")).click();
-		driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[1]")).click();
-	}
-	
-	public void selectAvatar(String typeAvatar){
-		driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIAButton[1]")).click();
-		driver.findElement(By.id(typeAvatar)).click();
-		driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIAScrollView[1]/UIACollectionView[1]/UIACollectionCell[7]")).click();
-		driver.findElement(By.id("select")).click();
-	}
-	
-	public void changeNameAvatar(String avatarName){
-		driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[1]")).click();
-		driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATextField[1]")).clear();
-		driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATextField[1]")).sendKeys(avatarName);
-		driver.findElement(By.id("Save")).click();
+	@AfterClass
+	public static void quit(){
+		appiumIosAction.quitAppiumAction();
 	}
 }
