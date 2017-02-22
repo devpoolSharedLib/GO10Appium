@@ -38,15 +38,15 @@ public class AppiumIOSTest {
 	private String AVATAR_TYPE_MAN = "man";
 	
 	@BeforeClass
-	public static void setEnvironment(){
+	public static void setEnvironment() throws MalformedURLException{
 		EnvironmentUtil.deleteTopic();
 		EnvironmentUtil.resetTotalTopic();
 		EnvironmentUtil.createTopic();
 		EnvironmentUtil.deleteLike();
 		EnvironmentUtil.deleteRead();
+		setupAppium();
 	}
 	
-	@BeforeClass
 	public static void setupAppium() throws MalformedURLException{
 		File app = new File("src/test/resources/GO10-1.0.4.app");
 		cap = new DesiredCapabilities();
