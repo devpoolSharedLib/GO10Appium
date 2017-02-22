@@ -1,6 +1,6 @@
 package th.co.gosoft.appiumIOS;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -12,27 +12,16 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.internal.TouchAction;
-import org.openqa.selenium.interactions.touch.TouchActions;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.MobileDriver;
-import io.appium.java_client.MobileElement;
-import io.appium.java_client.SwipeElementDirection;
-import io.appium.java_client.TouchShortcuts;
 import io.appium.java_client.ios.IOSDriver;
-import io.appium.java_client.ios.IOSElement;
 import io.appium.java_client.remote.MobileCapabilityType;
-import io.appium.java_client.remote.MobilePlatform;
 import th.co.gosoft.util.EnvironmentUtil;
-import th.co.gosoft.appiumIOS.AppiumIOSAction;
 
 public class AppiumIOSTest {
 	private static  WebDriver driver;
@@ -67,11 +56,9 @@ public class AppiumIOSTest {
 		driver = new IOSDriver(new URL("http://127.0.0.1:4723/wd/hub"), cap);
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 		appiumIosAction = new AppiumIOSAction(driver);
-		
 		appiumIosAction.loginAction();
 		appiumIosAction.pressAllowBtnAction();
 		appiumIosAction.logoutAction();
-		
 	}
 	
 	@Before
@@ -79,15 +66,15 @@ public class AppiumIOSTest {
 		appiumIosAction.loginAction();
 	}
 	
-////	@Test
-//	public void hotTopicList() throws MalformedURLException, InterruptedException{
-//		List<WebElement> hotTopicElements = driver.findElements(By.className("UIATableCell"));
-//		List<WebElement> roomElements = driver.findElements(By.className("UIACollectionCell"));
-//		assertEquals(12, hotTopicElements.size());
-//		assertEquals(10, roomElements.size());
-//	}
+	@Ignore
+	public void hotTopicList() throws MalformedURLException, InterruptedException{
+		List<WebElement> hotTopicElements = driver.findElements(By.className("UIATableCell"));
+		List<WebElement> roomElements = driver.findElements(By.className("UIACollectionCell"));
+		assertEquals(12, hotTopicElements.size());
+		assertEquals(10, roomElements.size());
+	}
 	
-//	@Test 
+	@Test 
 	public void newPost(){
 		appiumIosAction.gotoRoomPage();
 		appiumIosAction.postTopic(STR_POST, STR_CONTENT);
@@ -96,7 +83,7 @@ public class AppiumIOSTest {
 		assertEquals(STR_POST,driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[1]/UIAStaticText[1]")).getAttribute("name"));
 	}	
 	
-//	@Test
+	@Test
 	public void newComment(){
 		appiumIosAction.gotoRoomPage();
 		appiumIosAction.gotoTopic(STR_POST_FOR_COMMENT);
@@ -121,7 +108,7 @@ public class AppiumIOSTest {
 		assertEquals(1,Integer.parseInt(driver.findElement(By.xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[@name = '" + STR_POST_FOR_COMMENT + "'][1]/UIAStaticText[2]")).getAttribute("value")));
 	}
 
-//	@Test
+	@Test
 	public void changeAvatarPic(){
 		appiumIosAction.gotoSettingAvatar();
 		appiumIosAction.selectAvatar(AVATAR_TYPE_WOMAN);
@@ -134,7 +121,7 @@ public class AppiumIOSTest {
 		appiumIosAction.pressBackBtnActoin();
 	}
 	
-//	@Test
+	@Test
 	public void changeAvatarName(){
 		appiumIosAction.gotoSettingAvatar();
 		appiumIosAction.changeNameAvatar(NAME_AVATAR);
